@@ -1,15 +1,14 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# clinicalsize
+# clinicalsize <a href="https://github.com/sebasquirarte/clinicalsize/blob/main/man/figures/logo.png"><img src="man/figures/logo.png" align="right" height="138" alt="clinicalsize_logo" /></a>
 
 <!-- badges: start -->
 
 <!-- badges: end -->
 
-***clinicalsize*** is an open-source R package for reproducible sample
-size calculation in clinical trials, with a companion Shiny application
-for interactive use.
+Open-source R package and shiny app for sample size calculation in
+clinical trials.
 
 ## Installation
 
