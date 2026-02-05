@@ -1,6 +1,8 @@
 library(shiny)
 library(clinicalsize)
 
+# Define UI ----
+
 ui <- fluidPage(
   titlePanel("Sample Size Calculator"),
 
@@ -29,6 +31,8 @@ ui <- fluidPage(
   )
 )
 
+# Define server logic ----
+
 server <- function(input, output) {
 
   results <- eventReactive(input$calc, {
@@ -52,5 +56,7 @@ server <- function(input, output) {
     results()
   })
 }
+
+# Run the app ----
 
 shinyApp(ui, server)
