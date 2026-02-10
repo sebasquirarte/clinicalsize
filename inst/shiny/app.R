@@ -29,10 +29,11 @@ ui <- fluidPage(
 
       .main-grid {
         display: grid;
-        grid-template-columns: 250px 1fr 2fr;
-        grid-template-rows: auto auto auto;
-        gap: 12px;
-        margin-top: 20px;
+        grid-template-columns: 240px 1fr 3fr;
+        grid-template-rows: 4fr 1fr 1fr;
+        row-gap: 0;
+        column-gap: 12px;
+        margin-top: 12px;
       }
 
       .sidebar-left {
@@ -47,21 +48,17 @@ ui <- fluidPage(
       }
 
       .top-middle {
-        min-height: 340px;
       }
 
       .top-right {
-        min-height: 340px;
       }
 
       .middle-wide {
         grid-column: 2 / 4;
-        min-height: 180px;
       }
 
       .bottom-wide {
         grid-column: 2 / 4;
-        min-height: 180px;
       }
 
       .calc-button {
