@@ -170,7 +170,7 @@ sample_size <- function(sample = c("one-sample", "two-sample"),
 #' @param x An object of class "sample_size".
 #' @param ... Further arguments passed to or from other methods.
 print.sample_size <- function(x, ...) {
-  cat(sprintf("\nSample Size Calculation\n\nTest type: %s\n", x$type))
+  cat(sprintf("Test type: %s\n", x$type))
   cat(sprintf("Design: %s\n", if (x$sample == "two-sample") sprintf("%s, %s", x$design, x$sample) else x$sample))
   cat(sprintf("Outcome: %s\n", x$outcome))
   cat(sprintf("Alpha (\u03b1): %.3f\n", x$alpha))
@@ -192,10 +192,10 @@ print.sample_size <- function(x, ...) {
   } else {
     cat(sprintf("n1 = %d\nn2 = %d\n", x$n1, x$n2))
   }
-  cat(sprintf("Total = %d\n", x$total))
+  cat(sprintf("Total = %d", x$total))
 
   if (x$dropout > 0) {
-    cat(sprintf("\nNote: Sample size increased by %.1f%% to account for potential dropouts.\n", x$dropout * 100))
+    cat(sprintf("\n\nSample size increased by %.1f%% to account for potential dropouts.\n", x$dropout * 100))
   }
   cat("\n")
   invisible(x)

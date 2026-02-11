@@ -102,24 +102,134 @@ ui <- fluidPage(
 
     div(
       class = "sidebar-left panel",
-      selectInput("sample", "Sample:", c("two-sample", "one-sample")),
-      selectInput("design", "Design:", c("parallel", "crossover")),
-      selectInput("outcome", "Outcome:", c("mean", "proportion")),
-      selectInput("type", "Test:", c("non-inferiority", "equivalence", "superiority", "equality")),
-      numericInput("x1", "x1:", 5.0),
-      numericInput("x2", "x2:", 5.0),
-      numericInput("SD", "SD:", 0.1),
-      numericInput("delta", "delta:", -0.05),
-      tags$button("Calculate", class = "calc-button")
+      selectInput("sample", "Sample:",
+                  choices = c("one-sample", "two-sample"),
+                  selected = "two-sample"),
+
+      conditionalPanel(
+        condition = "input.sample == 'two-sample'",
+        selectInput("design", "Design:",
+                    choices = c("parallel", "crossover"),
+                    selected = "parallel")
+      ),
+
+      selectInput("outcome", "Outcome:",
+                  choices = c("mean", "proportion"),
+                  selected = "mean"),
+
+      selectInput("type", "Test Type:",
+                  choices = c("equality", "equivalence",
+                              "non-inferiority", "superiority"),
+                  selected = "non-inferiority"),
+
+      numericInput("alpha", "Alpha (Type I error):",
+                   value = 0.05, min = 0.001, max = 0.2, step = 0.001),
+
+      numericInput("beta", "Beta (Type II error):",
+                   value = 0.20, min = 0.01, max = 0.5, step = 0.01),
+
+      numericInput("x1", "x1 (Treatment):", value = 5),
+      numericInput("x2", "x2 (Control/Reference):", value = 5),
+
+      conditionalPanel(
+        condition = "input.outcome == 'mean' || (input.sample == 'two-sample' && input.design == 'crossover')",
+        numericInput("SD", "Standard Deviation (SD):", value = 0.1)
+      ),
+
+      conditionalPanel(
+        condition = "input.type != 'equality'",
+        numericInput("delta", "Delta (Margin):", value = -0.05)
+      ),
+
+      conditionalPanel(
+        condition = "input.sample == 'two-sample' && input.design == 'parallel'",
+        numericInput("k", "Allocation Ratio (k = n1/n2):",
+                     value = 1, min = 0.1, step = 0.1)
+      ),
+
+      numericInput("dropout", "Dropout Rate (0–1):",
+                   value = 0.1, min = 0, max = 0.9, step = 0.01),
+
+      actionButton("calc", "Calculate", class = "calc-button")
     ),
 
-    div(class = "panel top-middle"),
-    div(class = "panel top-right"),
+    div(class = "panel top-middle",
+        uiOutput("results")
+    ),
+    div(class = "panel top-right",
+        plotOutput("range_plot", height = "400px")
+    ),
     div(class = "panel middle-wide"),
     div(class = "panel bottom-wide")
   )
 )
 
-server <- function(input, output) {}
+server <- function(input, output, session) {
+
+  calculated <- reactiveVal(FALSE)
+
+  observeEvent(input$calc, {
+    calculated(TRUE)
+  })
+
+  results <- reactive({
+
+    if (!calculated()) return(NULL)
+
+    tryCatch({
+      sample_size(
+        sample = input$sample,
+        design = if (input$sample == "two-sample") input$design else NULL,
+        outcome = input$outcome,
+        type = input$type,
+        alpha = input$alpha,
+        beta = input$beta,
+        x1 = input$x1,
+        x2 = input$x2,
+        SD = input$SD,
+        delta = input$delta,
+        dropout = input$dropout,
+        k = input$k
+      )
+    }, error = function(e) {
+      paste("Error:", e$message)
+    })
+  })
+
+  output$results <- renderUI({
+
+    res <- results()
+
+    if (is.null(res)) {
+      return(
+        div(
+          tags$h3("Sample Size"),
+          tags$hr(),
+          tags$p(style="color:#999;",
+                 "Results will appear here after calculation.")
+        )
+      )
+    }
+
+    if (is.character(res)) {
+      return(div(style="color:red;", res))
+    }
+
+    div(
+      tags$h3("Sample Size"),
+      tags$hr(),
+      tags$pre(
+        style = "
+          font-size: 14px;
+          background: none;
+          border: none;
+          padding: 0;
+          white-space: pre-wrap;
+        ",
+        paste(capture.output(print(res)), collapse = "\n")
+      )
+    )
+  })
+}
 
 shinyApp(ui, server)
