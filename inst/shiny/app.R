@@ -177,12 +177,6 @@ ui <- fluidPage(
 
 # Define server logic ----
 server <- function(input, output, session) {
-  calculated <- reactiveVal(TRUE)
-
-  observeEvent(input$calc, {
-    calculated(TRUE)
-  })
-
   common_params <- reactive({
     list(
       sample = input$sample,
@@ -199,7 +193,6 @@ server <- function(input, output, session) {
   })
 
   results <- reactive({
-    if (!calculated()) return(NULL)
     tryCatch(
       do.call(sample_size, c(
         common_params(),
@@ -210,7 +203,6 @@ server <- function(input, output, session) {
   })
 
   range_result <- reactive({
-    if (!calculated()) return(NULL)
     tryCatch(
       do.call(sample_size_range, c(
         common_params(),
