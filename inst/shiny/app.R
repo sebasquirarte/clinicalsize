@@ -171,7 +171,9 @@ ui <- fluidPage(
     div(class = "panel top-right",
         plotOutput("range_plot", height = "100%")
     ),
-    div(class = "panel middle-wide"),
+    div(class = "panel middle-wide",
+        uiOutput("range_table")
+    ),
     div(class = "panel bottom-wide")
   )
 )
@@ -208,11 +210,11 @@ server <- function(input, output, session) {
     })
   })
 
-  output$range_plot <- renderPlot({
+  range_result <- reactive({
     if (!calculated()) return(NULL)
 
     tryCatch({
-      result <- sample_size_range(
+      sample_size_range(
         x1_range = c(input$x1_min, input$x1_max),
         x2 = input$x2,
         step = input$step,
@@ -226,11 +228,41 @@ server <- function(input, output, session) {
         dropout = input$dropout,
         k = input$k
       )
-      result$plot
-    }, error = function(e) {
-      plot.new()
-      text(0.5, 0.5, paste("Error:", e$message), col = "red", cex = 1.2)
+    }, error = function(e) NULL)
+  })
+
+  output$range_plot <- renderPlot({
+    result <- range_result()
+    if (is.null(result)) return(NULL)
+    result$plot
+  })
+
+  output$range_table <- renderUI({
+    result <- range_result()
+    if (is.null(result)) return(NULL)
+
+    df <- result$data
+    power_colors <- c("70" = "#C5F4C1", "80" = "#79E1BE", "90" = "#33BFBC")
+
+    header_cells <- lapply(names(df), function(col) tags$th(col))
+    header <- tags$tr(header_cells)
+
+    rows <- lapply(seq_len(nrow(df)), function(i) {
+      bg <- power_colors[as.character(df$power[i])]
+      cells <- lapply(df[i, ], function(val) {
+        tags$td(style = "padding: 4px 8px;", format(val))
+      })
+      tags$tr(style = paste0("background-color:", bg, ";"), cells)
     })
+
+    tags$div(
+      style = "max-height: 400px; overflow-y: auto;",
+      tags$table(
+        style = "width: 100%; border-collapse: collapse; font-size: 13px;",
+        tags$thead(style = "position: sticky; top: 0; background: #F9FCFD;", header),
+        tags$tbody(rows)
+      )
+    )
   })
 
   output$results <- renderUI({
