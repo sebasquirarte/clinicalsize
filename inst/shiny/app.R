@@ -139,7 +139,10 @@ ui <- fluidPage(
         numericInput("delta", "Delta (Margin):", value = -0.1)
       ),
       conditionalPanel(
-        condition = "input.sample == 'two-sample' && input.design == 'parallel'",
+        condition = paste0(
+          "input.sample == 'two-sample'",
+          " && input.design == 'parallel'"
+        ),
         numericInput(
           "k", "Allocation Ratio (k):",
           value = 1, min = 0.1, step = 0.1
@@ -231,7 +234,11 @@ server <- function(input, output, session) {
 
     header_cells <- lapply(names(df), function(col) {
       tags$th(
-        style = "padding: 10px 14px; text-align: center; font-weight: 600; font-size: 11px; letter-spacing: 0.8px; color: #fff;",
+        style = paste0(
+          "padding: 10px 14px; text-align: center;",
+          " font-weight: 600; font-size: 11px;",
+          " letter-spacing: 0.8px; color: #fff;"
+        ),
         col
       )
     })
@@ -247,7 +254,9 @@ server <- function(input, output, session) {
             style = "padding: 8px 14px; text-align: center;",
             tags$span(
               style = paste0(
-                "display: inline-block; padding: 3px 14px; border-radius: 20px;",
+                "display: inline-block;",
+                " padding: 3px 14px;",
+                " border-radius: 20px;",
                 " background-color:", bg, "; color:", txt,
                 "; font-weight: 700; font-size: 12px;"
               ),
@@ -272,9 +281,19 @@ server <- function(input, output, session) {
     })
 
     tags$div(
-      style = "max-height: 400px; overflow-y: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);",
+      style = paste0(
+        "max-height: 400px; overflow-y: auto;",
+        " box-shadow: 0 1px 3px rgba(0,0,0,0.1),",
+        " 0 1px 2px rgba(0,0,0,0.06);"
+      ),
       tags$table(
-        style = "width: 100%; border-collapse: collapse; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px;",
+        style = paste0(
+          "width: 100%; border-collapse: collapse;",
+          " font-family: -apple-system,",
+          " BlinkMacSystemFont, 'Segoe UI',",
+          " Roboto, sans-serif;",
+          " font-size: 13px;"
+        ),
         tags$thead(
           style = "position: sticky; top: 0; background: #4599AC;",
           tags$tr(header_cells)
@@ -303,7 +322,11 @@ server <- function(input, output, session) {
       tags$h3("Sample Size"),
       tags$hr(),
       tags$pre(
-        style = "font-size: 14px; background: none; border: none; padding: 0; white-space: pre-wrap;",
+        style = paste0(
+          "font-size: 14px; background: none;",
+          " border: none; padding: 0;",
+          " white-space: pre-wrap;"
+        ),
         paste(capture.output(print(res)), collapse = "\n")
       )
     )
