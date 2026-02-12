@@ -80,7 +80,6 @@ sample_size <- function(sample = c("one-sample", "two-sample"),
   }
   needs_sd <- !(sample == "two-sample" && design == "parallel" && outcome == "proportion")
   if (needs_sd && is.null(SD)) stop("'SD' must be specified for this test configuration.", call. = FALSE)
-  if (!needs_sd && !is.null(SD)) warning("'SD' is not needed for this test configuration.", call. = FALSE)
   if (!is.null(SD) && (!is.numeric(SD) || length(SD) != 1 || SD <= 0)) {
     stop("'SD' must be a positive single numeric value.", call. = FALSE)
   }
@@ -192,11 +191,4 @@ print.sample_size <- function(x, ...) {
   } else {
     cat(sprintf("n1 = %d\nn2 = %d\n", x$n1, x$n2))
   }
-  cat(sprintf("Total = %d", x$total))
-
-  if (x$dropout > 0) {
-    cat(sprintf("\n\nSample size increased by %.1f%% to account for potential dropouts.\n", x$dropout * 100))
-  }
-  cat("\n")
-  invisible(x)
-}
+  cat(sprintf("Total = %d", x$total))}
