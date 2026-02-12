@@ -150,6 +150,12 @@ ui <- fluidPage(
       numericInput("dropout", "Dropout Rate (0–1):",
                    value = 0.1, min = 0, max = 0.9, step = 0.01),
 
+      tags$hr(),
+      tags$strong("Range Plot Settings"),
+      numericInput("x1_min", "x1 Range Min:", value = 4.9),
+      numericInput("x1_max", "x1 Range Max:", value = 5.1),
+      numericInput("step", "Step:", value = 0.01, min = 0.001, step = 0.001),
+
       actionButton("calc", "Calculate", class = "calc-button")
     ),
 
@@ -193,6 +199,31 @@ server <- function(input, output, session) {
       )
     }, error = function(e) {
       paste("Error:", e$message)
+    })
+  })
+
+  output$range_plot <- renderPlot({
+    if (!calculated()) return(NULL)
+
+    tryCatch({
+      result <- sample_size_range(
+        x1_range = c(input$x1_min, input$x1_max),
+        x2 = input$x2,
+        step = input$step,
+        sample = input$sample,
+        design = if (input$sample == "two-sample") input$design else NULL,
+        outcome = input$outcome,
+        type = input$type,
+        alpha = input$alpha,
+        SD = input$SD,
+        delta = input$delta,
+        dropout = input$dropout,
+        k = input$k
+      )
+      result$plot
+    }, error = function(e) {
+      plot.new()
+      text(0.5, 0.5, paste("Error:", e$message), col = "red", cex = 1.2)
     })
   })
 
