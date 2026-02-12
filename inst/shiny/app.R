@@ -177,7 +177,7 @@ ui <- fluidPage(
 
 # Define server logic ----
 server <- function(input, output, session) {
-  calculated <- reactiveVal(FALSE)
+  calculated <- reactiveVal(TRUE)
 
   observeEvent(input$calc, {
     calculated(TRUE)
