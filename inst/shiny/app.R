@@ -47,7 +47,8 @@ ui <- fluidPage(
         padding: 20px;
       }
 
-      .top-middle {
+      .top-middle, .top-right {
+        align-self: stretch;
       }
 
       .top-right {
@@ -244,7 +245,10 @@ server <- function(input, output, session) {
     df <- result$data
     power_colors <- c("70" = "#C5F4C1", "80" = "#79E1BE", "90" = "#33BFBC")
 
-    header_cells <- lapply(names(df), function(col) tags$th(col))
+    header_cells <- lapply(names(df), function(col) tags$th(
+      style = "padding: 8px 14px; text-align: center; font-weight: 600; font-size: 12px; letter-spacing: 0.5px; color: #fff;",
+      col
+    ))
     header <- tags$tr(header_cells)
 
     rows <- lapply(seq_len(nrow(df)), function(i) {
@@ -259,7 +263,7 @@ server <- function(input, output, session) {
       style = "max-height: 400px; overflow-y: auto;",
       tags$table(
         style = "width: 100%; border-collapse: collapse; font-size: 13px;",
-        tags$thead(style = "position: sticky; top: 0; background: #F9FCFD;", header),
+        tags$thead(style = "position: sticky; top: 0; background: #4599AC;", header),
         tags$tbody(rows)
       )
     )
