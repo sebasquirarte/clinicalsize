@@ -30,7 +30,7 @@ ui <- fluidPage(
       .main-grid {
         display: grid;
         grid-template-columns: 240px 1fr 3fr;
-        grid-template-rows: 4fr 1fr 1fr;
+        grid-template-rows: auto auto auto;
         row-gap: 0;
         column-gap: 12px;
         margin-top: 12px;
