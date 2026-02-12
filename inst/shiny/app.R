@@ -51,6 +51,12 @@ ui <- fluidPage(
       }
 
       .top-right {
+        display: flex;
+        flex-direction: column;
+      }
+      .top-right .shiny-plot-output {
+        flex: 1;
+        min-height: 0;
       }
 
       .middle-wide {
@@ -163,7 +169,7 @@ ui <- fluidPage(
         uiOutput("results")
     ),
     div(class = "panel top-right",
-        plotOutput("range_plot", height = "400px")
+        plotOutput("range_plot", height = "100%")
     ),
     div(class = "panel middle-wide"),
     div(class = "panel bottom-wide")
