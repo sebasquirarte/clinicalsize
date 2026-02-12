@@ -17,17 +17,17 @@ ui <- fluidPage(
       }
       .title-text h2 {
         margin: 0;
-        font-size: 50px;
+        font-size: 40px;
         font-weight: 400;
       }
       .title-text p {
         margin: 5px 0 0 0;
         color: #666;
-        font-size: 30px;
+        font-size: 20px;
       }
       .main-grid {
         display: grid;
-        grid-template-columns: 240px 2fr 3fr;
+        grid-template-columns: 220px 1.3fr 3fr;
         column-gap: 12px;
         margin-top: 12px;
       }
@@ -36,16 +36,15 @@ ui <- fluidPage(
         padding: 20px;
       }
       .panel {
-        background: #F9FCFD;
         border-radius: 4px;
         padding: 20px;
       }
       .top-middle {
-        max-height: 600px;
+        max-height: 550px;
         overflow-y: auto;
       }
       .top-right {
-        max-height: 600px;
+        max-height: 550px;
         overflow: hidden;
       }
       .middle-wide, .bottom-wide {
@@ -83,8 +82,8 @@ ui <- fluidPage(
     img(src = "logo.png", alt = "clinicalsize logo"),
     div(
       class = "title-text",
-      tags$h2("clinicalsize"),
-      tags$p("Sample Size Calculator for Clinical Trials")
+      tags$h2("clinicalsize: Sample Size Calculator for Clinical Trials"),
+      tags$p("Developed by the biostatistics team at Laboratorios Sophia S.A. de C.V.")
     )
   ),
   div(
@@ -169,6 +168,8 @@ ui <- fluidPage(
     ),
     div(
       class = "panel middle-wide",
+      tags$h3("Sample Size Range"),
+      tags$hr(),
       uiOutput("range_table")
     ),
     div(class = "panel bottom-wide")
@@ -299,11 +300,7 @@ server <- function(input, output, session) {
     if (is.null(res)) {
       return(div(
         tags$h3("Sample Size"),
-        tags$hr(),
-        tags$p(
-          style = "color:#999;",
-          "Results will appear here after calculation."
-        )
+        tags$hr()
       ))
     }
     if (is.character(res)) {
