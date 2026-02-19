@@ -47,7 +47,7 @@ ui <- fluidPage(
         max-height: 550px;
         overflow: hidden;
       }
-      .middle-wide, .bottom-wide {
+      .middle-wide {
         grid-column: 2 / 4;
       }
       .middle-wide {
@@ -162,8 +162,6 @@ ui <- fluidPage(
     ),
     div(
       class = "panel top-right",
-      tags$h3("Power Curves"),
-      tags$hr(),
       plotOutput("range_plot", height = "400px")
     ),
     div(
@@ -171,8 +169,7 @@ ui <- fluidPage(
       tags$h3("Sample Size Range"),
       tags$hr(),
       uiOutput("range_table")
-    ),
-    div(class = "panel bottom-wide")
+    )
   )
 )
 
