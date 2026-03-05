@@ -3,13 +3,13 @@
 \name{sample_size}
 \alias{sample_size}
 \alias{print.sample_size}
-\title{Sample Size Calculation for Clinical Trials}
+\title{Sample Size for Clinical Trials}
 \usage{
 sample_size(
   sample = c("one-sample", "two-sample"),
   design = NULL,
   outcome = c("mean", "proportion"),
-  type = c("equality", "equivalence", "non-inferiority", "superiority"),
+  type = c("equivalence", "non-inferiority", "superiority"),
   alpha = 0.05,
   beta = 0.2,
   x1 = NULL,
@@ -23,36 +23,34 @@ sample_size(
 \method{print}{sample_size}(x, ...)
 }
 \arguments{
-\item{sample}{Character string indicating whether one or two samples need to be calculated.
-Options: "one-sample" or "two-sample".}
+\item{sample}{Character. Sampling structure: 'one-sample' or 'two-sample'.}
 
-\item{design}{Character string indicating study design when sample = "two-sample".
-Options: "parallel" or "crossover". Default: NULL for one-sample tests.}
+\item{design}{Character. Study design for two-sample tests: 'parallel' or
+'crossover'. Ignored for one-sample tests.}
 
-\item{outcome}{Character string indicating the type of outcome variable.
-Options: "mean" or "proportion".}
+\item{outcome}{Character. Outcome variable type: 'mean' or 'proportion'.}
 
-\item{type}{Character string indicating the type of hypothesis test.
-Options: "equality", "equivalence", "non-inferiority", or "superiority".}
+\item{type}{Character. Hypothesis test type: 'equivalence',
+'non-inferiority', or 'superiority'.}
 
-\item{alpha}{Numeric parameter indicating the Type I error rate (significance level). Default: 0.05.}
+\item{alpha}{Numeric. Type I error rate. Must be between 0-1. Default: 0.05.}
 
-\item{beta}{Numeric parameter indicating the Type II error rate (1 - power). Default: 0.20.}
+\item{beta}{Numeric. Type II error rate. Must be between 0-1. Default: 0.20.}
 
-\item{x1}{Numeric value of the mean or proportion for group 1 (treatment group).}
+\item{x1}{Numeric. Mean or proportion for the treatment group.}
 
-\item{x2}{Numeric value of the mean or proportion for group 2 (control group or reference value).}
+\item{x2}{Numeric. Mean or proportion for the control group or reference value.}
 
-\item{SD}{Numeric value indicating the standard deviation. Required for mean outcomes and crossover
-designs with proportion outcomes. Default: NULL.}
+\item{SD}{Numeric. Pooled standard deviation. Required for mean outcomes and
+crossover designs. Must be positive. Default: NULL.}
 
-\item{delta}{Numeric value indicating the margin of clinical interest. Required for non-equality tests.
-Must be negative for non-inferiority and positive for superiority/equivalence. Default: NULL.}
+\item{delta}{Numeric. Clinical margin of interest. Must be negative for
+non-inferiority; positive for superiority/equivalence. Default: NULL.}
 
-\item{dropout}{Numeric value indicating the discontinuation rate expected in the study.
-Must be between 0 and 1. Default: 0.}
+\item{dropout}{Numeric. Expected participant dropout rate, between 0-1. Default: 0.}
 
-\item{k}{Numeric value indicating the allocation ratio (n1/n2) for two-sample tests. Default: 1.}
+\item{k}{Numeric. Allocation ratio n1/n2 for parallel two-sample tests.
+Must be positive. Default: 1.}
 
 \item{x}{An object of class "sample_size".}
 
@@ -62,8 +60,10 @@ Must be between 0 and 1. Default: 0.}
 An object of class "sample_size" containing the calculated sample size and study parameters.
 }
 \description{
-Calculates the sample size needed in a clinical trial based on study design
-and statistical parameters using standard formulas for hypothesis testing (Chow, S. 2017).
+Calculates the required sample size for a clinical trial based on study design
+and statistical parameters using hypothesis testing formulas and methods from
+Chow et al. (2017). Supports equivalence, non-inferiority, and superiority
+testing frameworks for evaluating treatment effects against a clinically meaningful margin.
 }
 \section{Methods (by generic)}{
 \itemize{
