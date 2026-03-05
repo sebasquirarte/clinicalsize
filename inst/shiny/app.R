@@ -5,76 +5,79 @@ library(clinicalsize)
 ui <- fluidPage(
   tags$head(
     tags$style(HTML("
+      html, body { height: 100%; margin: 0; }
       .title-container {
         display: flex;
         align-items: center;
-        gap: 25px;
-        padding: 15px 0;
+        gap: 16px;
+        padding: 8px 0 6px 0;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 8px;
       }
       .title-container img {
-        height: 150px;
+        height: 70px;
         width: auto;
       }
       .title-text h2 {
         margin: 0;
-        font-size: 40px;
-        font-weight: 400;
+        font-size: 24px;
+        font-weight: 500;
       }
       .title-text p {
-        margin: 5px 0 0 0;
+        margin: 2px 0 0 0;
         color: #666;
-        font-size: 20px;
+        font-size: 13px;
       }
       .main-grid {
         display: grid;
-        grid-template-columns: 220px 1.3fr 3fr;
-        column-gap: 12px;
-        margin-top: 12px;
+        grid-template-columns: 200px 1fr 2fr;
+        grid-template-rows: 1fr auto;
+        column-gap: 10px;
+        row-gap: 10px;
+        height: calc(100vh - 110px);
       }
       .sidebar-left {
-        grid-row: 1 / 4;
-        padding: 20px;
+        grid-row: 1 / 3;
+        overflow-y: auto;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 4px;
+        border: 1px solid #e2e8f0;
       }
+      .sidebar-left .form-group { margin-bottom: 8px; }
+      .sidebar-left label { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+      .sidebar-left .form-control { height: 28px; font-size: 12px; padding: 2px 6px; }
+      .sidebar-left select.form-control { height: 28px; }
       .panel {
         border-radius: 4px;
-        padding: 20px;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        overflow: auto;
       }
-      .top-middle {
-        max-height: 550px;
-        overflow-y: auto;
-      }
-      .top-right {
-        max-height: 550px;
-        overflow: hidden;
-      }
-      .middle-wide {
+      .top-middle { grid-row: 1; grid-column: 2; }
+      .top-right  { grid-row: 1; grid-column: 3; }
+      .bottom-wide {
+        grid-row: 2;
         grid-column: 2 / 4;
-      }
-      .middle-wide {
+        max-height: 260px;
         overflow: auto;
       }
       .calc-button {
-        background: white;
-        color: #2C5F6F;
-        border: 3px solid white;
-        padding: 15px 30px;
+        background: #2C5F6F;
+        color: white;
+        border: none;
+        padding: 8px 20px;
         border-radius: 6px;
-        margin: 25px auto 0 auto;
+        margin: 10px auto 0 auto;
         display: block;
-        width: 150px;
-        font-size: 18px;
+        width: 100%;
+        font-size: 13px;
         font-weight: 700;
         cursor: pointer;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
       }
-      .calc-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-      }
-      .calc-button:active {
-        transform: translateY(0);
-      }
+      .calc-button:hover { background: #1e4455; }
     "))
   ),
   div(
@@ -89,7 +92,7 @@ ui <- fluidPage(
   div(
     class = "main-grid",
     div(
-      class = "sidebar-left panel",
+      class = "sidebar-left",
       selectInput(
         "sample", "Sample:",
         choices = c("one-sample", "two-sample"),
@@ -110,18 +113,15 @@ ui <- fluidPage(
       ),
       selectInput(
         "type", "Test Type:",
-        choices = c(
-          "equality", "equivalence",
-          "non-inferiority", "superiority"
-        ),
+        choices = c("equivalence", "non-inferiority", "superiority"),
         selected = "non-inferiority"
       ),
       numericInput(
-        "alpha", "Alpha (Type I error):",
+        "alpha", "Alpha (\u03b1):",
         value = 0.05, min = 0.001, max = 0.2, step = 0.001
       ),
       numericInput(
-        "beta", "Beta (Type II error):",
+        "beta", "Beta (\u03b2):",
         value = 0.20, min = 0.01, max = 0.5, step = 0.01
       ),
       numericInput("x1", "x1 (Treatment):", value = 0.7),
@@ -133,10 +133,7 @@ ui <- fluidPage(
         ),
         numericInput("SD", "Standard Deviation (SD):", value = 0.1)
       ),
-      conditionalPanel(
-        condition = "input.type != 'equality'",
-        numericInput("delta", "Delta (Margin):", value = -0.1)
-      ),
+      numericInput("delta", "Delta (Margin):", value = -0.1),
       conditionalPanel(
         condition = "input.sample == 'two-sample' && input.design == 'parallel'",
         numericInput(
@@ -148,8 +145,10 @@ ui <- fluidPage(
         "dropout", "Dropout Rate (0\u20131):",
         value = 0.1, min = 0, max = 0.9, step = 0.01
       ),
-      numericInput("x1_min", "x1 Range Min:", value = 0.65),
-      numericInput("x1_max", "x1 Range Max:", value = 0.70),
+      tags$hr(style = "margin: 8px 0;"),
+      tags$small(tags$b("x1 Range (for plot/table)")),
+      numericInput("x1_min", "Min:", value = 0.65),
+      numericInput("x1_max", "Max:", value = 0.70),
       numericInput(
         "step", "Step:",
         value = 0.01, min = 0.001, step = 0.001
@@ -162,12 +161,12 @@ ui <- fluidPage(
     ),
     div(
       class = "panel top-right",
-      plotOutput("range_plot", height = "400px")
+      plotOutput("range_plot", height = "100%")
     ),
     div(
-      class = "panel middle-wide",
-      tags$h3("Sample Size Range"),
-      tags$hr(),
+      class = "panel bottom-wide",
+      tags$h5(style = "margin: 0 0 6px 0;", "Sample Size Range"),
+      tags$hr(style = "margin: 0 0 8px 0;"),
       uiOutput("range_table")
     )
   )
@@ -229,7 +228,7 @@ server <- function(input, output, session) {
 
     header_cells <- lapply(names(df), function(col) {
       tags$th(
-        style = "padding: 10px 14px;
+        style = "padding: 6px 12px;
                  text-align: center;
                  font-weight: 600;
                  font-size: 11px;
@@ -247,19 +246,19 @@ server <- function(input, output, session) {
         val <- df[i, col]
         if (col == "power") {
           tags$td(
-            style = "padding: 8px 14px; text-align: center;",
+            style = "padding: 5px 12px; text-align: center;",
             tags$span(
               style = paste0(
-                "display: inline-block; padding: 3px 14px; border-radius: 20px;",
+                "display: inline-block; padding: 2px 10px; border-radius: 20px;",
                 " background-color:", bg, "; color:", txt,
-                "; font-weight: 700; font-size: 12px;"
+                "; font-weight: 700; font-size: 11px;"
               ),
               paste0(val, "%")
             )
           )
         } else {
           tags$td(
-            style = "padding: 8px 14px; text-align: center; color: #334155;",
+            style = "padding: 5px 12px; text-align: center; color: #334155; font-size: 12px;",
             format(val)
           )
         }
@@ -267,22 +266,19 @@ server <- function(input, output, session) {
       tags$tr(
         style = paste0(
           "background-color:", bg, "33;",
-          "border-bottom: 1px solid #e2e8f0;",
-          "transition: background-color 0.15s ease;"
+          "border-bottom: 1px solid #e2e8f0;"
         ),
         cells
       )
     })
 
     tags$div(
-      style = "max-height: 400px;
-               overflow-y: auto;
-               box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);",
+      style = "overflow-y: auto;
+               box-shadow: 0 1px 3px rgba(0,0,0,0.1);",
       tags$table(
         style = "width: 100%;
                  border-collapse: collapse;
-                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                 font-size: 13px;",
+                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;",
         tags$thead(
           style = "position: sticky; top: 0; background: #4599AC;",
           tags$tr(header_cells)
@@ -304,10 +300,10 @@ server <- function(input, output, session) {
       return(div(style = "color:red;", res))
     }
     div(
-      tags$h3("Sample Size"),
-      tags$hr(),
+      tags$h4(style = "margin: 0 0 6px 0;", "Sample Size"),
+      tags$hr(style = "margin: 0 0 8px 0;"),
       tags$pre(
-        style = "font-size: 14px;
+        style = "font-size: 13px;
                  background: none;
                  border: none;
                  padding: 0;

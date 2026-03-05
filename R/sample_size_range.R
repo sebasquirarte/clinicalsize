@@ -37,15 +37,16 @@
 #' in Clinical Research (3rd ed.). Chapman and Hall/CRC. https://doi.org/10.1201/9781315183084
 #'
 #' @import ggplot2
-#' @importFrom utils capture.output
 #'
 #' @export
 
 sample_size_range <- function(x1_range,
                               x2,
                               step = 0.1,
+                              sample = c("one-sample", "two-sample"),
                               ...) {
 
+  sample <- match.arg(sample)
   dots <- list(...)
 
   # Input validation
@@ -64,23 +65,28 @@ sample_size_range <- function(x1_range,
 
   # Declare variables to avoid R CMD check NOTEs
   x1 <- total_n <- power <- ymin <- ymax <- NULL
-  sample <- dots$sample
 
   # Setup calculations
   power_levels <- c(70, 80, 90)
   results.temp <- expand.grid(x1 = seq(x1_range[1], x1_range[2], by = step),
-                         power = power_levels)
+                              power = power_levels)
   dropout_rate <- if ("dropout" %in% names(list(...))) list(...)$dropout else 0
+
+  # Pre-initialize result columns to avoid recycling issues on first assignment
+  results.temp$total_n <- NA_real_
+  if (sample == "two-sample") {
+    results.temp$n1 <- NA_real_
+    results.temp$n2 <- NA_real_
+  }
 
   # Calculate sample sizes
   for (i in seq_len(nrow(results.temp))) {
-    ss_result <- tryCatch({
-      suppressMessages(capture.output({
-        ss <- sample_size(x1 = results.temp$x1[i], x2 = x2,
-                          beta = 1 - results.temp$power[i] / 100, ...)
-      }))
-      ss
-    }, error = function(e) list(n1 = NA_real_, n2 = NA_real_, total = NA_real_))
+    ss_result <- tryCatch(
+      sample_size(x1 = results.temp$x1[i], x2 = x2,
+                  beta = 1 - results.temp$power[i] / 100,
+                  sample = sample, ...),
+      error = function(e) list(n1 = NA_real_, n2 = NA_real_, total = NA_real_)
+    )
 
     if (sample == "two-sample") {
       results.temp$n1[i] <- ss_result$n1

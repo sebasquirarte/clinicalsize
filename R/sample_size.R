@@ -54,9 +54,7 @@ sample_size <- function(sample = c("one-sample", "two-sample"),
                         SD = NULL,
                         delta = NULL,
                         dropout = 0,
-                        k = 1,
-                        n1 = n1,
-                        n2 = n2) {
+                        k = 1) {
 
   # Input validation ----
 
@@ -127,8 +125,8 @@ sample_size <- function(sample = c("one-sample", "two-sample"),
 
   n2 <- ceiling(zscore * variance / margin)
   n1 <- if (sample == "two-sample" && design == "parallel") ceiling(k * n2)
-        else if (sample == "two-sample" && design == "crossover") n2
-        else NULL
+  else if (sample == "two-sample" && design == "crossover") n2
+  else NULL
 
   if (dropout > 0) {
     n2 <- ceiling(n2 / (1 - dropout))
